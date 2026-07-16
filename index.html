@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valedictory Memory Book</title>
+
+    <!-- Link to CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Cover Page -->
+    <section id="coverPage">
+
+    <img src="images/PHS.jpg" class="cover-logo">
+
+    <h1>PROVIDENCE HIGH SCHOOL</h1>
+
+    <h2>Valedictory Memory Book</h2>
+
+    <h3>Class of 2026</h3>
+
+    <p>
+        Welcome to our digital memory book.
+        Share your memories, dreams, and best moments
+        before graduation.
+    </p>
+
+    <button id="enterBtn">📖 Enter Memory Book</button>
+
+</section>
+
+<div id="mainContent" style="display:none;">
+    <!-- Header -->
+    <header>
+        <img src="images/PHS.jpg" alt="PHS Logo" class="logo">
+        <h1>Valedictory Memory Book</h1>
+        <p>Welcome to our Class of 2026 Memory Book</p>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+        <!-- Introduction -->
+        <section class="intro">
+            <h2>Create Your Memory</h2>
+            <p>
+                Fill in your details and leave a memorable message
+                for your classmates before graduation.
+            </p>
+        </section>
+
+        <!-- Student Form -->
+        <section class="form-section">
+
+            <h2>Student Information</h2>
+
+            <form id="memoryForm">
+
+                <label for="name">Full Name</label><br>
+                <input type="text" id="name" placeholder="Enter your full name" required><br><br>
+                <label for="studentClass">Class</label><br>
+                <label for="position">Position</label><br>
+
+                <select id="position">
+
+                <option>Student</option>
+
+                    <option>Head Boy</option>
+
+                    <option>Head Girl</option>
+
+                    <option>Senior Prefect</option>
+
+                    <option>Assistant Senior Prefect</option>
+
+                    <option>Sports Prefect</option>
+
+                    <option>Library Prefect</option>
+
+                    <option>Social Prefect</option>
+
+                    <option>Lab Prefect</option>
+
+                    <option>Chapel Prefect</option>
+
+                </select>
+
+                <br><br>
+                <input type="text" id="studentClass" placeholder="e.g SS3 Alpha" required><br><br>
+
+                <label for="quote">Favorite Quote</label><br>
+                <textarea id="quote" rows="4" placeholder="Write your favorite quote" required></textarea><br><br>
+
+                <label for="ambition">Future Ambition</label><br>
+                <input type="text" id="ambition" placeholder="What do you want to become?" required><br><br>
+                <label for="photo">Upload Your Photo</label><br>
+                <input type="file" id="photo" accept="image/*"><br><br>
+
+                <button type="submit">Save My Memory</button>
+
+            </form>
+
+        </section>
+        <section class="spotlight">
+
+            <h2>🌟 Student Spotlight</h2>
+
+            <div id="spotlightCard">
+
+                <p>No student selected yet.</p>
+            </div>
+        </section>
+        <section class="dashboard">
+
+            <div class="stat-card">
+                <h2 id="totalStudents">0</h2>
+                <p>👥 Students</p>
+            </div>
+
+            <div class="stat-card">
+                <h2 id="totalMemories">0</h2>
+                <p>📚 Memories</p>
+            </div>
+
+            <div class="stat-card">
+                <h2 id="totalLikes">0</h2>
+                <p>❤️ Likes</p>
+            </div>
+        </section>
+        <!-- Student Memories -->
+        <section class="memory-section">
+
+        <h2>Student Memories</h2>
+
+        <h3 id="memoryCount">📚 Total Memories: 0</h3>
+        <button id="pdfBtn">📄 Download Memory Book</button>
+
+        <br><br>
+
+            <input
+                type="text"
+                id="search"
+                placeholder="🔍 Search student by name..."
+            >
+
+            <br><br>
+
+            <div id="memoryList">
+
+            </div>
+
+    
+        </section>
+        <section class="gallery-section">
+
+            <h2>🎓 Class Gallery</h2>
+
+            <div id="gallery"></div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Valedictory Memory Book | Bsam</p>
+        <button id="themeBtn">🌙 Dark Mode</button>
+    </footer>
+    </div>
+    <!-- JavaScript -->
+    <!-- jsPDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Your JavaScript -->
+    <script src="script.js"></script>
+
+</body>
+</html>

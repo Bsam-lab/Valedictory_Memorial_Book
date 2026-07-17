@@ -1,4 +1,13 @@
+import { db } from "./firebase.js";
 
+import {
+    collection,
+    addDoc,
+    getDocs,
+    deleteDoc,
+    updateDoc,
+    doc
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 // Get form and memory list
 const spotlightCard = document.getElementById("spotlightCard");
 const gallery = document.getElementById("gallery");
@@ -11,11 +20,28 @@ const totalStudents = document.getElementById("totalStudents");
 const totalMemories = document.getElementById("totalMemories");
 const totalLikes = document.getElementById("totalLikes");
 // Load saved memories
-let memories = JSON.parse(localStorage.getItem("memories")) || [];
+let memories = [];
 
 // Track which memory is being edited
 let editIndex = -1;
+async function loadMemories() {
 
+    memories = [];
+
+    const querySnapshot = await getDocs(collection(db, "memories"));
+
+    querySnapshot.forEach((document) => {
+
+        memories.push({
+            id: document.id,
+            ...document.data()
+        });
+
+    });
+
+    displayMemories();
+
+}
 // Display all memories
 function displayMemories() {
 
@@ -124,9 +150,9 @@ if (memories.length > 0) {
 }
 
 // Show saved memories when page loads
-displayMemories();
+loadMemories();
 // Save a memory (new or edited)
-function saveMemory(photo) {
+async function saveMemory(photo) {
 
     const newMemory = {
         name: document.getElementById("name").value,
@@ -138,26 +164,31 @@ function saveMemory(photo) {
         liked: editIndex === -1 ? false : memories[editIndex].liked
     };
 
-    if (editIndex === -1) {
-        // New memory
-        memories.push(newMemory);
-    } else {
-        // Update existing memory
-        memories[editIndex] = newMemory;
-        editIndex = -1;
+ if (editIndex === -1) {
 
-        document.querySelector("button[type='submit']").textContent = "Save My Memory";
-    }
+    // New memory
+    await addDoc(collection(db, "memories"), newMemory);
 
-    localStorage.setItem("memories", JSON.stringify(memories));
+} else {
 
-    displayMemories();
+    // Update existing memory
+    await updateDoc(
+        doc(db, "memories", memories[editIndex].id),
+        newMemory
+    );
+
+    editIndex = -1;
+
+    document.querySelector("button[type='submit']").textContent = "Save My Memory";
+}
+
+ await loadMemories();
 
     form.reset();
 }
 
 // Handle form submission
-form.addEventListener("submit", function (e) {
+form.addEventListener("submit", async function (e) {
 
     e.preventDefault();
 
@@ -168,8 +199,8 @@ form.addEventListener("submit", function (e) {
 
         const reader = new FileReader();
 
-        reader.onload = function () {
-            saveMemory(reader.result);
+        reader.onload = async function () {
+            await saveMemory(reader.result);
         };
 
         reader.readAsDataURL(file);
@@ -183,25 +214,24 @@ form.addEventListener("submit", function (e) {
             return;
         }
 
-        saveMemory(memories[editIndex].photo);
+        await saveMemory(memories[editIndex].photo);
     }
 
 });
 
 // Delete memory
-function deleteMemory(index) {
+async function deleteMemory(index) {
 
     if (confirm("Delete this memory?")) {
 
-        memories.splice(index, 1);
+        await deleteDoc(doc(db, "memories", memories[index].id));
 
-        localStorage.setItem("memories", JSON.stringify(memories));
+        loadMemories();
 
-        displayMemories();
     }
 
 }
-
+window.deleteMemory = deleteMemory;
 // Edit memory
 function editMemory(index) {
 
@@ -217,21 +247,27 @@ function editMemory(index) {
 
     document.querySelector("button[type='submit']").textContent = "Update Memory";
 }
-
+window.editMemory = editMemory;
 // Like / Unlike
-function likeMemory(index) {
+// Like / Unlike
+async function likeMemory(index) {
 
-    memories[index].liked = !memories[index].liked;
+    const currentMemory = memories[index];
 
-    localStorage.setItem("memories", JSON.stringify(memories));
+    await updateDoc(
+        doc(db, "memories", currentMemory.id),
+        {
+            liked: !currentMemory.liked
+        }
+    );
 
-    displayMemories();
+    await loadMemories();
+
 }
-search.addEventListener("input", function () {
 
-    displayMemories();
+// Make function available to HTML
+window.likeMemory = likeMemory;
 
-});
 pdfBtn.addEventListener("click", function () {
 
     const { jsPDF } = window.jspdf;

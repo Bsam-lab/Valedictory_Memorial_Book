@@ -1,5 +1,10 @@
-import { db } from "./firebase.js";
-
+import { db, auth } from "./firebase.js";
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import {
     collection,
     addDoc,
@@ -19,6 +24,14 @@ const memoryCount = document.getElementById("memoryCount");
 const totalStudents = document.getElementById("totalStudents");
 const totalMemories = document.getElementById("totalMemories");
 const totalLikes = document.getElementById("totalLikes");
+// Authentication elements
+const authSection = document.getElementById("authSection");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+
+const signupBtn = document.getElementById("signupBtn");
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
 // Load saved memories
 let memories = [];
 
@@ -401,25 +414,110 @@ const enterBtn = document.getElementById("enterBtn");
 const coverPage = document.getElementById("coverPage");
 const mainContent = document.getElementById("mainContent");
 
-// Check if user has already entered before
-if (localStorage.getItem("enteredMemoryBook") === "yes") {
-
-    coverPage.style.display = "none";
-    mainContent.style.display = "block";
-
-} else {
-
-    coverPage.style.display = "flex";
-    mainContent.style.display = "none";
-
-}
 
 // When Enter button is clicked
 enterBtn.addEventListener("click", function () {
 
-    localStorage.setItem("enteredMemoryBook", "yes");
-
     coverPage.style.display = "none";
     mainContent.style.display = "block";
+
+});
+// =========================
+// SIGN UP
+// =========================
+
+signupBtn.addEventListener("click", async function () {
+
+    try {
+
+        await createUserWithEmailAndPassword(
+            auth,
+            email.value,
+            password.value
+        );
+
+        alert("Account created successfully!");
+
+        email.value = "";
+        password.value = "";
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+
+});
+// =========================
+// LOGIN
+// =========================
+
+loginBtn.addEventListener("click", async function () {
+
+    try {
+
+        await signInWithEmailAndPassword(
+            auth,
+            email.value,
+            password.value
+        );
+
+        alert("Login successful!");
+
+        email.value = "";
+        password.value = "";
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+
+});
+// =========================
+// AUTH STATE
+// =========================
+
+onAuthStateChanged(auth, function (user) {
+
+    if (user) {
+
+        // User is logged in
+        authSection.style.display = "none";
+        document.getElementById("userEmail").textContent =
+        "👤 " + user.email;
+        coverPage.style.display = "flex";
+        logoutBtn.style.display = "inline-block";
+
+    } else {
+
+        // User is NOT logged in
+        authSection.style.display = "block";
+        coverPage.style.display = "none";
+        mainContent.style.display = "none";
+        logoutBtn.style.display = "none";
+
+    }
+
+});
+// =========================
+// LOGOUT
+// =========================
+
+logoutBtn.addEventListener("click", async function () {
+
+    try {
+
+        await signOut(auth);
+
+        alert("Logged out successfully!");
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(error.message);
+
+    }
 
 });

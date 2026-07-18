@@ -9,6 +9,45 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <section id="authSection">
+
+        <div class="login-left">
+
+            <img src="images/PHS.jpg" class="login-logo">
+
+            <h1>Providence High School</h1>
+
+            <h2>Valedictory Memory Book</h2>
+
+            <p>
+                Preserve your graduation memories forever.
+                Share your best moments with classmates before graduation.
+            </p>
+
+        </div>
+
+        <div class="login-card">
+
+            <h2>Welcome Back 👋</h2>
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Enter your email"
+            >
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+            >
+
+            <button id="loginBtn">🔑 Login</button>
+
+            <button id="signupBtn">📝 Create Account</button>
+
+        </div>
+    </section>
     <!-- Cover Page -->
     <section id="coverPage">
 
@@ -33,11 +72,28 @@
 <div id="mainContent" style="display:none;">
     <!-- Header -->
     <header>
-        <img src="images/PHS.jpg" alt="PHS Logo" class="logo">
-        <h1>Valedictory Memory Book</h1>
-        <p>Welcome to our Class of 2026 Memory Book</p>
-    </header>
 
+        <div class="header-left">
+
+            <img src="images/PHS.jpg" alt="PHS Logo" class="logo">
+
+            <div>
+
+                <h1>Valedictory Memory Book</h1>
+
+                <p>Welcome to our Class of 2026 Memory Book</p>
+
+            </div>
+
+        </div>
+
+        <div class="header-right">
+
+            <span id="userEmail"></span>
+
+            <button id="logoutBtn" style="display:none;">🚪 Logout</button>
+        </div>
+    </header>
     <!-- Main Content -->
     <main>
 
@@ -164,6 +220,7 @@
     <!-- Footer -->
     <footer>
         <p>&copy; 2026 Valedictory Memory Book | Bsam</p>
+
         <button id="themeBtn">🌙 Dark Mode</button>
     </footer>
     </div>

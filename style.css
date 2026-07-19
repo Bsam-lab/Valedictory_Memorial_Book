@@ -950,23 +950,7 @@ header{
     gap:10px;
 
 }
-.login-card{
 
-    width:450px;
-
-    background:white;
-
-    color:#333;
-
-    padding:45px;
-
-    border-radius:20px;
-
-    text-align:center;
-
-    box-shadow:0 20px 50px rgba(0,0,0,.3);
-
-}
 
 .login-logo{
 
@@ -1086,14 +1070,7 @@ header{
 
     }
 
-    .hero{
-
-        width:100%;
-
-        text-align:center;
-
-    }
-
+   
     .login-card{
 
         width:100%;
@@ -1117,18 +1094,6 @@ header{
     h2{
 
         font-size:28px;
-
-    }
-
-    .hero{
-
-        text-align:center;
-
-    }
-
-    .hero p{
-
-        font-size:18px;
 
     }
 
@@ -1181,6 +1146,61 @@ header{
     .login-card{
 
         padding:25px;
+
+    }
+
+}
+/* ===========================
+   MOBILE HEADER
+=========================== */
+
+@media (max-width:768px){
+
+    header{
+
+        flex-direction:column;
+
+        text-align:center;
+
+        padding:20px;
+
+        gap:20px;
+
+    }
+
+    .header-left{
+
+        flex-direction:column;
+
+        gap:15px;
+
+    }
+
+    .header-left h1{
+
+        font-size:30px;
+
+    }
+
+    .header-left p{
+
+        font-size:16px;
+
+    }
+
+    .header-right{
+
+        flex-direction:column;
+
+        gap:12px;
+
+        width:100%;
+
+    }
+
+    #logoutBtn{
+
+        width:200px;
 
     }
 

@@ -34,6 +34,29 @@ const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 // Load saved memories
 let memories = [];
+// =========================
+// TOAST NOTIFICATION
+// =========================
+
+function showToast(message, type){
+
+    const toast = document.getElementById("toast");
+
+    toast.textContent = message;
+
+    toast.className = "";
+
+    toast.classList.add(type);
+
+    toast.style.display = "block";
+
+    setTimeout(function(){
+
+        toast.style.display = "none";
+
+    },3000);
+
+}
 
 // Track which memory is being edited
 let editIndex = -1;
@@ -113,13 +136,20 @@ filteredMemories.forEach(function(memory){
                     ${memory.liked ? "❤️ Liked" : "🤍 Like"}
                 </button>
 
-                <button class="edit-btn" onclick="editMemory(${index})">
-                    ✏ Edit
-                </button>
+                ${
+                    auth.currentUser &&
+                    memory.owner === auth.currentUser.uid
+                    ? `
+                        <button class="edit-btn" onclick="editMemory(${index})">
+                            ✏ Edit
+                        </button>
 
-                <button class="delete-btn" onclick="deleteMemory(${index})">
-                    🗑 Delete
-                </button>
+                        <button class="delete-btn" onclick="deleteMemory(${index})">
+                            🗑 Delete
+                        </button>
+                    `
+                    : ""
+                }
 
             </div>
         `;
@@ -163,18 +193,22 @@ if (memories.length > 0) {
 }
 
 // Show saved memories when page loads
-loadMemories();
+//loadMemories();
 // Save a memory (new or edited)
 async function saveMemory(photo) {
 
-    const newMemory = {
-        name: document.getElementById("name").value,
-        studentClass: document.getElementById("studentClass").value,
-        position: document.getElementById("position").value,
-        quote: document.getElementById("quote").value,
-        ambition: document.getElementById("ambition").value,
-        photo: photo,
-        liked: editIndex === -1 ? false : memories[editIndex].liked
+   const newMemory = {
+    name: document.getElementById("name").value,
+    studentClass: document.getElementById("studentClass").value,
+    position: document.getElementById("position").value,
+    quote: document.getElementById("quote").value,
+    ambition: document.getElementById("ambition").value,
+    photo: photo,
+
+    owner: auth.currentUser.uid,
+    ownerEmail: auth.currentUser.email,
+
+    liked: editIndex === -1 ? false : memories[editIndex].liked
     };
 
  if (editIndex === -1) {
@@ -198,6 +232,7 @@ async function saveMemory(photo) {
  await loadMemories();
 
     form.reset();
+    showToast("🎉 Memory saved successfully!", "success");
 }
 
 // Handle form submission
@@ -223,7 +258,7 @@ form.addEventListener("submit", async function (e) {
         // No new photo selected
 
         if (editIndex === -1) {
-            alert("Please select a photo.");
+            showToast("Please select a photo.", "error");
             return;
         }
 
@@ -238,6 +273,7 @@ async function deleteMemory(index) {
     if (confirm("Delete this memory?")) {
 
         await deleteDoc(doc(db, "memories", memories[index].id));
+        showToast("🗑 Memory deleted successfully!", "success");
 
         loadMemories();
 
@@ -428,6 +464,9 @@ enterBtn.addEventListener("click", function () {
 
 signupBtn.addEventListener("click", async function () {
 
+    signupBtn.disabled = true;
+    signupBtn.textContent = "⏳ Creating...";
+
     try {
 
         await createUserWithEmailAndPassword(
@@ -436,14 +475,35 @@ signupBtn.addEventListener("click", async function () {
             password.value
         );
 
-        alert("Account created successfully!");
+        signupBtn.textContent = "✅ Account Created!";
+
+        showToast("✅ Account created successfully!", "success");
 
         email.value = "";
         password.value = "";
 
     } catch (error) {
 
-        alert(error.message);
+        signupBtn.disabled = false;
+        signupBtn.textContent = "📝 Create Account";
+
+        if (error.code === "auth/email-already-in-use") {
+
+            showToast("❌ Email already registered.", "error");
+
+        } else if (error.code === "auth/weak-password") {
+
+            showToast("❌ Password must be at least 6 characters.", "error")
+
+        } else if (error.code === "auth/invalid-email") {
+
+            showToast(error.message, "error");
+
+        } else {
+
+            showToast(error.message, "error");
+
+        }
 
     }
 
@@ -454,6 +514,9 @@ signupBtn.addEventListener("click", async function () {
 
 loginBtn.addEventListener("click", async function () {
 
+    loginBtn.disabled = true;
+    loginBtn.textContent = "⏳ Logging in...";
+
     try {
 
         await signInWithEmailAndPassword(
@@ -462,14 +525,38 @@ loginBtn.addEventListener("click", async function () {
             password.value
         );
 
-        alert("Login successful!");
+        loginBtn.textContent = "✅ Welcome!";
 
         email.value = "";
         password.value = "";
 
     } catch (error) {
 
-        alert(error.message);
+        loginBtn.disabled = false;
+        loginBtn.textContent = "🔑 Login";
+
+        if (error.code === "auth/invalid-credential") {
+
+            showToast("❌ Incorrect email or password.", "error");
+
+
+        } else if (error.code === "auth/user-not-found") {
+
+           showToast("❌ Email not registered.", "error");
+
+        } else if (error.code === "auth/wrong-password") {
+
+            showToast("❌ Incorrect password.", "error");
+
+        } else if (error.code === "auth/invalid-email") {
+
+            showToast("❌ Invalid email address.", "error");
+
+        } else {
+
+            showToast(error.message, "error");
+
+        }
 
     }
 
@@ -488,6 +575,7 @@ onAuthStateChanged(auth, function (user) {
         "👤 " + user.email;
         coverPage.style.display = "flex";
         logoutBtn.style.display = "inline-block";
+        loadMemories();
 
     } else {
 
@@ -521,3 +609,7 @@ logoutBtn.addEventListener("click", async function () {
     }
 
 });
+window.onload = function () {
+
+    showToast("👋 Logged out successfully!", "success");
+};

@@ -117,6 +117,12 @@ filteredMemories.forEach(function(memory){
             <img src="${memory.photo}" class="student-photo">
 
             <h2>${memory.name}</h2>
+            <h2>${memory.nickname}</h2>
+            <h2>${memory.intended_university}</h2>
+            <h2>${memory.contact_address}</h2>
+            <h2>${memory.phone_number}</h2>
+            <h2>${memory.hobby}</h2>
+            <h2>${memory.dob}</h2>
 
             <h4>${memory.studentClass}</h4>
 
@@ -133,7 +139,7 @@ filteredMemories.forEach(function(memory){
             <div class="button-group">
 
                 <button class="like-btn" onclick="likeMemory(${index})">
-                    ${memory.liked ? "❤️ Liked" : "🤍 Like"}
+                    ❤️ ${memory.likes || 0} Likes
                 </button>
 
                 ${
@@ -199,6 +205,12 @@ async function saveMemory(photo) {
 
    const newMemory = {
     name: document.getElementById("name").value,
+    nickname:document.getElementById("nickname").value,
+    intended_university:document.getElementById("intended_university").value,
+    contact_address:document.getElementById("contact_address").value,
+    phone_number:document.getElementById("phone_number").value,
+    hobby:document.getElementById("hobby").value,
+    dob:document.getElementById("dob").value,
     studentClass: document.getElementById("studentClass").value,
     position: document.getElementById("position").value,
     quote: document.getElementById("quote").value,
@@ -208,7 +220,9 @@ async function saveMemory(photo) {
     owner: auth.currentUser.uid,
     ownerEmail: auth.currentUser.email,
 
-    liked: editIndex === -1 ? false : memories[editIndex].liked
+    likes: editIndex === -1 ? 0 : memories[editIndex].likes,
+
+    likedBy: editIndex === -1 ? [] : memories[editIndex].likedBy
     };
 
  if (editIndex === -1) {
@@ -303,17 +317,39 @@ async function likeMemory(index) {
 
     const currentMemory = memories[index];
 
+    const userId = auth.currentUser.uid;
+
+    let likedBy = currentMemory.likedBy || [];
+
+    let likes = currentMemory.likes || 0;
+
+    if (likedBy.includes(userId)) {
+
+        // Unlike
+        likedBy = likedBy.filter(id => id !== userId);
+
+        likes--;
+
+    } else {
+
+        // Like
+        likedBy.push(userId);
+
+        likes++;
+
+    }
+
     await updateDoc(
         doc(db, "memories", currentMemory.id),
         {
-            liked: !currentMemory.liked
+            likedBy: likedBy,
+            likes: likes
         }
     );
 
     await loadMemories();
 
 }
-
 // Make function available to HTML
 window.likeMemory = likeMemory;
 
@@ -366,41 +402,69 @@ pdfBtn.addEventListener("click", function () {
         doc.setFontSize(16);
         doc.text(`Name: ${memory.name}`, 20, y);
 
-        y += 12;
+        y +=11;
 
         // ===== CLASS =====
         doc.text(`Class: ${memory.studentClass}`, 20, y);
 
-        y += 12;
+        y += 11;
 
         // ===== POSITION =====
         doc.text(`Position: ${memory.position}`, 20, y);
 
-        y += 18;
+        y += 11;
+        // ===== NICKNAME =====
+        doc.text(`Nickname: ${memory.nickname}`, 20, y);
+
+        y += 11;
+        // ===== INTENDED UNIVERSITY =====
+        doc.text(`Intended University: ${memory.intended_university}`, 20, y);
+
+        y += 11;
+
+        // ===== CONTACT ADDRESS =====
+        doc.text(`Contact Address: ${memory.contact_address}`, 20, y);
+
+        y += 11;
+
+        // ===== PHONE NUMBER =====
+        doc.text(`Phone number: ${memory.phone_number}`, 20, y);
+
+        y += 11;
+
+        // ===== HOBBY =====
+        doc.text(`Hobby: ${memory.hobby}`, 20, y);
+
+        y += 11;
+
+        // ===== DOB =====
+        doc.text(`DOB: ${memory.dob}`, 20, y);
+
+        y += 11;
 
         // ===== FAVORITE QUOTE =====
-        doc.setFontSize(14);
-        doc.text("Favorite Quote", 20, y);
+        // doc.setFontSize(14);
+        doc.text(`Favorite Quote: ${memory.quote}`, 20, y);
 
-        y += 8;
+        y += 11;
 
-        doc.setFontSize(12);
+        // doc.setFontSize(12);
 
-        const quote = doc.splitTextToSize(memory.quote, 170);
-        doc.text(quote, 20, y);
+        // const quote = doc.splitTextToSize(memory.quote, 170);
+        // doc.text(quote, 20, y);
 
-        y += quote.length * 7 + 10;
+        // y += quote.length * 7 + 10;
 
         // ===== FUTURE AMBITION =====
-        doc.setFontSize(14);
-        doc.text("Future Ambition", 20, y);
+        // doc.setFontSize(14);
+        doc.text(`Future Ambition: ${memory.ambition}`, 20, y);
 
-        y += 8;
+        y += 11;
 
-        doc.setFontSize(12);
+        // doc.setFontSize(12);
 
-        const ambition = doc.splitTextToSize(memory.ambition, 170);
-        doc.text(ambition, 20, y);
+        // const ambition = doc.splitTextToSize(memory.ambition, 170);
+        // doc.text(ambition, 20, y);
 
     });
 
